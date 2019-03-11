@@ -48,8 +48,8 @@
             _requestDataObj=document.getElementById(_requestData);
 
             //加载数据：
-            _requestUrlObj.value=localStorage[_requestUrl];
-            _requestDataObj.value=localStorage[_requestData];
+            _requestUrlObj.value=localStorage[_requestUrl]||'';
+            _requestDataObj.value=localStorage[_requestData]||'';
 
             _requestUrlObj.addEventListener('keyup',function(){
                 localStorage[_requestUrl]=_requestUrlObj.value;
@@ -63,7 +63,7 @@
 </head>
 
 <body>
-    <div>请求地址：<input id="requestUrl"></div>
+    <div>请求地址：<input style="width:300px;" id="requestUrl"></div>
     <div>请求数据：<textarea id="requestData" style="width:500px;height:500px"></textarea></div>
     <div style="margin-top:20px;">响应数据：
         <p id="responseData"></p>
