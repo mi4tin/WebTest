@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <script type="text/javascript">
+    	Refresh();
+        function Refresh()
+            {
+                console.log('refre')
+                var xmlHttp =  new XMLHttpRequest();
+                xmlHttp.open("GET","wshtest.json",true);
+                xmlHttp.onreadystatechange=function(){
+                if(xmlHttp.readyState==4 || xmlHttp.readyState=="complete")
+                {
+                    console.log("responseType",xmlHttp.status);
+                    if(xmlHttp.status==200)
+                    {
+                        
+                    }
+                }
+                
+                };
+                xmlHttp.send(null);
+                
+            }
+    </script>
+</head>
+<body>
+	
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>测试PC，url添加网址</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <style>
+        .box {
+            width: 400px;
+            height: 400px;
+            border: 1px solid #000;
+            margin: 100px auto;
+            box-shadow: 0 0 10px 5px rgba(0, 0, 0, .8);
+            border-radius: 10px;
+            line-height: 400px;
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            text-shadow: 0 0 5px;
+            transition: all 1s;
+        }
+
+        .box #entity {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">拖拽外部文件至此</div>
+    <script type="text/javascript">
+
+     $.ajax({
+                    url: "http://www.baidu.com",
+                    type: "GET",
+                    dataType: "jsonp", //指定服务器返回的数据类型
+                    success: function (data) {
+                      console.log(data);
+                    }
+                });
+
+        // 需求：拖拽外部文件到当前页面进行解析
+
+        // 获取目标元素
+        var box = document.querySelector('.box');
+
+
+        // (1)需要解决一旦拖拽外部文件就覆盖掉当前页面的问题
+        //  解决：给document绑定drop事件 
+        //  drop事件默认触发不了，需要在dragover事件里面阻止默认事件
+        document.ondrop = function (e) {
+            e.preventDefault();
+        }
+        // 这个阻止默认事件是为了让drop事件得以触发
+        document.ondragover = function (e) {
+            e.preventDefault();
+        }
+
+        box.ondragenter = function () {
+            box.style.boxShadow = '0 0 10px 5px rgba(255,0,0,.8)';
+        }
+
+        box.ondrop = function (e) {
+            drop_handler(e);
+            return;
+            console.log(e.dataTransfer);
+            console.log(JSON.stringify(e.dataTransfer));
+            // 得到拖拽过来的文件
+            var dataFile = e.dataTransfer.files[0];
+            dataTran = e.dataTransfer;
+            console.log(e.dataTransfer.files.length, dataTran.items.length);
+            console.log(dataTran.items[0]);
+            // FileReader实例化
+            var fr = new FileReader();
+            // 异步读取文件
+            fr.readAsText(dataFile);
+            // 读取完毕之后执行
+            fr.onload = function () {
+                // 获取得到的结果
+                var data = fr.result;
+
+                var ta = document.createElement('textarea');
+                ta.value = data;
+                ta.id = 'entity';
+                box.innerHTML = '';
+                box.appendChild(ta);
+
+            }
+        }
+
+        function drop_handler(ev) {
+            console.log("Drop");
+            ev.preventDefault();
+            var data = event.dataTransfer.items;
+            for (var i = 0; i < data.length; i += 1) {
+                if ((data[i].kind == 'string') &&
+                    (data[i].type.match('^text/plain'))) {
+                    // 遍历拖拽项的内容
+                    data[i].getAsString(function (s) {
+                        console.log(s);
+                        ev.target.appendChild(document.getElementById(s));
+                    });
+                } else if ((data[i].kind == 'string') &&
+                    (data[i].type.match('^text/html'))) {
+                    // 拖拽项的数据是 HTML
+                    console.log("... Drop: HTML");
+                } else if ((data[i].kind == 'string') &&
+                    (data[i].type.match('^text/uri-list'))) {
+                    // 拖拽项的数据是URI
+                    console.log("... Drop: URI");
+                } else if ((data[i].kind == 'file') &&
+                    (data[i].type.match('^image/'))) {
+                    // 拖拽项的数据是一个图片
+                    var f = data[i].getAsFile();
+                    console.log("... Drop: File ");
+                }
+            }
+        }
+
+
+        function  getSource() {
+                var  url  =  "https://www.baidu.com/";
+                xmlHttp  =  new  createXmlHttp();
+                xmlHttp.onreadystatechange  =  writeSource; //设置回调函数
+                xmlHttp.open( "get",  url,  true);
+                xmlHttp.send(null);
+        }
+        function  writeSource() {
+                if  (xmlHttp.readyState  ==  4) {
+                        if (xmlHttp.status == 200) {
+                                alert(xmlHttp.responseText);
+                        }
+                }
+        }
+        function  createXmlHttp() {
+                var  objXMLHttp;
+                if ( window.ActiveXObject ) {
+                        var  MSXML  =  [ 'MSXML2.XMLHTTP.6.0',  'Microsoft.XMLHTTP',  'Msxml2.XMLHTTP', 'MSXML2.XMLHTTP.4.0',  'MSXML2.XMLHTTP.5.0',  'MSXML2.XMLHTTP.3.0',  'MSXML2.XMLHTTP.2.0'];
+                        for (var  i = 0;  i < MSXML.length;  i++ ) {
+                                try {
+                                        objXMLHttp  =  new  ActiveXObject(MSXML[i]);
+                                        return  objXMLHttp;
+                                }
+                                catch (e) {
+                                        objXMLHttp = false;
+                                }
+                        }
+                }
+                else  if (window.XMLHttpRequest) {
+                        objXMLHttp  =  new  XMLHttpRequest();
+                        return  objXMLHttp;
+                }
+                else {
+                        return  null;
+                }
+        }
+    </script> </body>
+
+</html>

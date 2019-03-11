@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <script src="js/1.js"></script>
+    <script type="text/javascript">
+    	//得到固定随机数 i动态数、a,b为固定数,ranMax随机最大值,ranMin最小值
+        function getFixedNewRan(i, a, b, ranMax, ranMin) {
+            //a *= 2; b += 2; a *= b;
+
+            return (i * a * (i % a)) % (ranMax - ranMin + 1) + ranMin;
+        }
+   		
+    </script>
+</head>
+<body>
+	
+</body>
+</html>

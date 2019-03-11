@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <script src="js/http.js"></script>
+    <script src="js/pako_inflate.min.js"></script>
+    <script>
+        $http.postResByte("http://10.1.0.49:11042/", { "ModuleName": "Player", "MethodName": "ReportGameData", "Parameters": ["Gold", "23"], "PlayerId": "13GAEB00", "SessionId": "98504551569DF60643287098879635BF" }
+            , function (r) {
+                console.log(123, r);
+                var reader = new FileReader();
+                reader.addEventListener("loadend", function () {
+                    console.log(reader.result);
+                    console.log(unzip(reader.result));
+                });
+                //js中的blob没有没有直接读出其数据的方法，通过FileReader来读取相关数据
+                reader.readAsBinaryString(r);
+            });
+
+        function unzip(b64Data) {
+            // var strData     = atob(b64Data);
+
+            // Convert binary string to character-number array
+            var charData = b64Data.split('').map(function (x) { return x.charCodeAt(0); });
+
+            // Turn number array into byte-array
+            var binData = new Uint8Array(charData);
+
+            // unzip
+            var data = pako.inflate(binData);
+
+            // Convert gunzipped byteArray back to ascii string:
+            strData = String.fromCharCode.apply(null, new Uint16Array(data));
+            return decodeURIComponent(escape(strData));
+        }
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
