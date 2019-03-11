@@ -8,18 +8,6 @@
     <script src="js/http.js"></script>
     <script src="js/pako_inflate.min.js"></script>
     <script>
-        $http.postResByte("http://10.1.0.49:11042/", { "ModuleName": "Player", "MethodName": "ReportGameData", "Parameters": ["Gold", "23"], "PlayerId": "13GAEB00", "SessionId": "98504551569DF60643287098879635BF" }
-            , function (r) {
-                console.log(123, r);
-                var reader = new FileReader();
-                reader.addEventListener("loadend", function () {
-                    console.log(reader.result);
-                    console.log(unzip(reader.result));
-                });
-                //js中的blob没有没有直接读出其数据的方法，通过FileReader来读取相关数据
-                reader.readAsBinaryString(r);
-            });
-
         function unzip(b64Data) {
             // var strData     = atob(b64Data);
 
@@ -36,11 +24,52 @@
             strData = String.fromCharCode.apply(null, new Uint16Array(data));
             return decodeURIComponent(escape(strData));
         }
+
+        var _requestUrl='requestUrl',_requestData='requestData';
+        function requestAction() {
+            var requestUrl = _requestUrlObj.value;
+            var requestData = _requestDataObj.value;
+            $http.postResByte(requestUrl, requestData, function (r) {
+                console.log(123, r);
+                var reader = new FileReader();
+                reader.addEventListener("loadend", function () {
+                    console.log(reader.result);
+                    var resStr = unzip(reader.result);
+                    document.getElementById('responseData').innerText = resStr;
+                });
+                //js中的blob没有没有直接读出其数据的方法，通过FileReader来读取相关数据
+                reader.readAsBinaryString(r);
+            });
+        }
+
+        var _requestUrlObj,_requestDataObj;
+        window.onload = function () {
+            _requestUrlObj=document.getElementById(_requestUrl);
+            _requestDataObj=document.getElementById(_requestData);
+
+            //加载数据：
+            _requestUrlObj.value=localStorage[_requestUrl];
+            _requestDataObj.value=localStorage[_requestData];
+
+            _requestUrlObj.addEventListener('keyup',function(){
+                localStorage[_requestUrl]=_requestUrlObj.value;
+            });
+
+            _requestDataObj.addEventListener('keyup',function(){
+                localStorage[_requestData]=_requestDataObj.value;
+            });
+        } 
     </script>
 </head>
 
 <body>
-
+    <div>请求地址：<input id="requestUrl"></div>
+    <div>请求数据：<textarea id="requestData" style="width:500px;height:500px"></textarea></div>
+    <div style="margin-top:20px;">响应数据：
+        <p id="responseData"></p>
+    </div>
+    <div style="width:500px;text-align: center"><input style="width:100px;height:50px;" type="button" value="请求"
+            onclick="requestAction()"></div>
 </body>
 
 </html>
